@@ -146,7 +146,7 @@ class GamePlay():
                 elif self.dealer.hand_value < player.hand_value:
                     print('{p} your hand value is {n}, you win!'.format(p=player.name, n=player.hand_value))
                 else:
-                    print('Sorry {p}, your hand value is {n}, you lose this hand.'.format(p=player.name, n=player.hand_value)
+                    print('Sorry {p}, your hand value is {n}, you lose this hand.'.format(p=player.name, n=player.hand_value))
 
 
 game = GamePlay()
