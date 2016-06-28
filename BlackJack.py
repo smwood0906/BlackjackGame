@@ -39,14 +39,18 @@ class Player():
         self.hand_value = 0
         self.cards = []
         self.turn = False
-
-    def display_hand(self):
-        pass
+        self.in_hand = True
 
     def calc_score(self):
+        self.hand_value = 0
         for card in self.cards:
             self.hand_value += card.value
 
+    def clear_turn(self):
+        self.hand_value = 0
+        self.cards = []
+        self.turn = False
+        self.dealer_check = True
 
 class GamePlay():
     print('Let\'s play some Blackjack!')
@@ -74,30 +78,75 @@ class GamePlay():
             player.cards.append(card2)
 
     def play_game(self):
+        self.deal()
         for player in self.player_lst:
             player.turn = True
             print("{} it\'s your turn!".format(player.name))
+            print("Dealer is showing " + str(self.dealer.cards[0]) + ".")
             while player.turn:
+                print("Your hand is " + ", ".join([str(x) for x in player.cards])) #list comprehension
                 player.calc_score()
+                print("Your hand value is " + str(player.hand_value))
+
                 if player.hand_value == 21:
                     player.turn = False
                     print('Congratulations! You\'ve won this hand!')
+                    player.in_hand = False
 
                 elif player.hand_value > 21:
                     player.turn = False
                     print('Sorry, you bust!')
+                    player.in_hand = False
 
                 elif player.hand_value < 21:
                     choice = input('Would you like to Hit or Stay?: ')
 
                 if choice.capitalize() == 'Hit':
-                    hit_card = player.deck.pop()
+                    hit_card = self.deck.deck.pop()
                     player.cards.append(hit_card)
 
                 elif choice.capitalize() == 'Stay':
                     player.turn = False
-            else:
-                print('I\'m sorry, I didn\'t understand that.')
+                    player.in_hand = True
+
+                else:
+                     print('I\'m sorry, I didn\'t understand that.')
+        self.dealer_turn()
+        self.final_score()
+
+    def dealer_turn(self):
+         self.dealer.turn = True
+         self.dealer.calc_score()
+         print("Dealer is showing " + ", ".join([str(x) for x in self.dealer.cards]))
+         print("Dealer hand value is " + str(self.dealer.hand_value))
+         while self.dealer.turn:
+                self.dealer.calc_score()
+                if self.dealer.hand_value > 21:
+                    print("Dealer busts!")
+                    self.dealer.turn = False
+                elif self.dealer.hand_value >= 17:
+                    self.dealer.calc_score()
+                    print(self.dealer.hand_value)
+                    self.dealer.turn = False
+                elif self.dealer.hand_value <= 16:
+                    print( "Dealer hits.")
+                    hit_card = self.deck.deck.pop()
+                    self.dealer.cards.append(hit_card)
+                    self.dealer.calc_score()
+                    print(self.dealer.hand_value)
+
+    def final_score(self):
+        for player in self.player_lst:
+            if player.in_hand == True:
+                print(str(self.dealer.hand_value))
+                if self.dealer.hand_value > 21:
+                    print(' Dealer busts! {} you win this hand!'.format(player.name))
+                elif self.dealer.hand_value == player.hand_value:
+                    print('{p} your hand value is {n}, you push.'.format(p=player.name, n=player.hand_value))
+                elif self.dealer.hand_value < player.hand_value:
+                    print('{p} your hand value is {n}, you win!'.format(p=player.name, n=player.hand_value))
+                else:
+                    print('Sorry {p}, your hand value is {n}, you lose this hand.'.format(p=player.name, n=player.hand_value)
 
 
 game = GamePlay()
